@@ -48,13 +48,28 @@ function getPlaceholder(type) {
 }
 
 function ScriptElement({ element, isActive, onFocus, onChange, onKeyDown, textareaRef }) {
-  const rows = Math.max(1, Math.ceil((element.text.length || 1) / 55))
+  const localRef = useRef(null)
+
+  const setRef = (node) => {
+    localRef.current = node
+    if (typeof textareaRef === 'function') textareaRef(node)
+  }
+
+  // Auto-resize : ajuste la hauteur à chaque changement de texte
+  useEffect(() => {
+    const el = localRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = el.scrollHeight + 'px'
+  }, [element.text])
+
   return (
     <div className={"script-el el-" + element.type + (isActive ? " el-focused" : "")}>
       {isActive && <span className="el-type-label">{ELEMENT_LABELS[element.type]}</span>}
-      <textarea ref={textareaRef} className="el-textarea" value={element.text} rows={rows}
+      <textarea ref={setRef} className="el-textarea" value={element.text}
         onChange={e => onChange(e.target.value)} onFocus={onFocus} onKeyDown={onKeyDown}
-        placeholder={isActive ? getPlaceholder(element.type) : ''} spellCheck />
+        placeholder={isActive ? getPlaceholder(element.type) : ''} spellCheck
+        rows={1} style={{overflow:'hidden'}} />
     </div>
   )
 }
