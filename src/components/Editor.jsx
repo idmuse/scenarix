@@ -3,7 +3,7 @@ import { ELEMENT_TYPES, ELEMENT_LABELS, TAB_CYCLE, ENTER_CREATES, createScene, c
 import { exportToPDF } from '../utils/pdfExport.js'
 import './Editor.css'
 function getPlaceholder(type) {
-  const p = { scene_heading:'INT. LIEU — JOUR', action:'Description de la scène…', character:'NOM DU PERSONNAGE', parenthetical:'(indication)', dialogue:'Réplique…', transition:'COUPE SUR :', note:'Note interne (non exportée)' }
+  const p = { scene_heading:'INT./EXT. — LIEU — JOUR/NUIT', action:'Description de la scène…', character:'NOM DU PERSONNAGE', parenthetical:'(indication)', dialogue:'Réplique…', transition:'COUPE SUR :', note:'Note interne (non exportée)' }
   return p[type] || ''
 }
 function ScriptElement({ element, isActive, onFocus, onChange, onKeyDown, textareaRef }) {
