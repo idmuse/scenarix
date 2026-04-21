@@ -2,12 +2,10 @@ import { useState, useCallback, useRef } from 'react'
 import { ELEMENT_TYPES, ELEMENT_LABELS, TAB_CYCLE, ENTER_CREATES, createScene, createElement, extractSceneTitle, estimatePages, estimateMinutes } from '../utils/screenplay.js'
 import { exportToPDF } from '../utils/pdfExport.js'
 import './Editor.css'
-
 function getPlaceholder(type) {
   const p = { scene_heading:'INT. LIEU — JOUR', action:'Description de la scène…', character:'NOM DU PERSONNAGE', parenthetical:'(indication)', dialogue:'Réplique…', transition:'COUPE SUR :', note:'Note interne (non exportée)' }
   return p[type] || ''
 }
-
 function ScriptElement({ element, isActive, onFocus, onChange, onKeyDown, textareaRef }) {
   const rows = Math.max(1, Math.ceil((element.text.length || 1) / 55))
   return (
@@ -19,23 +17,21 @@ function ScriptElement({ element, isActive, onFocus, onChange, onKeyDown, textar
     </div>
   )
 }
-
 export default function Editor({ project, onUpdate, onBack, onExportProject }) {
   const [activeSceneId, setActiveSceneId] = useState(project?.scenes?.[0]?.id || null)
   const [activeElementId, setActiveElementId] = useState(null)
   const [showNotePanel, setShowNotePanel] = useState(false)
   const [editingTitle, setEditingTitle] = useState(false)
   const [titleVal, setTitleVal] = useState(project?.title || '')
+  const [editingAuthor, setEditingAuthor] = useState(false)
+  const [authorVal, setAuthorVal] = useState(project?.author || '')
   const textareaRefs = useRef({})
   if (!project) return null
   const activeScene = project.scenes.find(s => s.id === activeSceneId) || project.scenes[0]
-
   const updateScenes = (newScenes) => onUpdate({ ...project, scenes: newScenes })
-
   const updateElement = useCallback((sceneId, elementId, changes) => {
     updateScenes(project.scenes.map(s => s.id !== sceneId ? s : { ...s, elements: s.elements.map(el => el.id !== elementId ? el : { ...el, ...changes }) }))
   }, [project])
-
   const addElementAfter = useCallback((sceneId, afterId, type) => {
     const newEl = createElement(type, '')
     updateScenes(project.scenes.map(s => {
@@ -46,7 +42,6 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
     }))
     setTimeout(() => { setActiveElementId(newEl.id); textareaRefs.current[newEl.id]?.focus() }, 30)
   }, [project])
-
   const deleteElement = useCallback((sceneId, elementId) => {
     const scene = project.scenes.find(s => s.id === sceneId)
     if (!scene || scene.elements.length <= 1) return
@@ -55,12 +50,10 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
     updateScenes(project.scenes.map(s => s.id !== sceneId ? s : { ...s, elements: s.elements.filter(el => el.id !== elementId) }))
     if (prevId) { setActiveElementId(prevId); setTimeout(() => textareaRefs.current[prevId]?.focus(), 30) }
   }, [project])
-
   const setElementType = useCallback((sceneId, elementId, type) => {
     updateElement(sceneId, elementId, { type })
     setTimeout(() => textareaRefs.current[elementId]?.focus(), 10)
   }, [updateElement])
-
   const addScene = () => {
     const s = createScene()
     updateScenes([...project.scenes, s])
@@ -68,14 +61,12 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
     setActiveElementId(s.elements[0].id)
     setTimeout(() => textareaRefs.current[s.elements[0].id]?.focus(), 50)
   }
-
   const deleteScene = (sceneId) => {
     if (project.scenes.length <= 1) return
     const newScenes = project.scenes.filter(s => s.id !== sceneId)
     updateScenes(newScenes)
     if (activeSceneId === sceneId) setActiveSceneId(newScenes[0].id)
   }
-
   const moveScene = (sceneId, dir) => {
     const idx = project.scenes.findIndex(s => s.id === sceneId)
     const newIdx = idx + dir
@@ -83,18 +74,16 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
     const arr = [...project.scenes];[arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]]
     updateScenes(arr)
   }
-
   const handleKeyDown = useCallback((e, sceneId, element) => {
     if (e.key === 'Tab') { e.preventDefault(); const next = e.shiftKey ? (Object.keys(TAB_CYCLE).find(k => TAB_CYCLE[k] === element.type) || element.type) : TAB_CYCLE[element.type]; setElementType(sceneId, element.id, next); return }
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addElementAfter(sceneId, element.id, ENTER_CREATES[element.type] || 'action'); return }
     if (e.key === 'Backspace' && element.text === '') { e.preventDefault(); deleteElement(sceneId, element.id); return }
     if (e.metaKey || e.ctrlKey) { const m = {'1':'scene_heading','2':'action','3':'character','4':'parenthetical','5':'dialogue','6':'transition','7':'note'}; if (m[e.key]) { e.preventDefault(); setElementType(sceneId, element.id, m[e.key]) } }
   }, [addElementAfter, deleteElement, setElementType])
-
   const saveTitle = () => { if (titleVal.trim()) onUpdate({ ...project, title: titleVal.trim() }); setEditingTitle(false) }
+  const saveAuthor = () => { onUpdate({ ...project, author: authorVal.trim() }); setEditingAuthor(false) }
   const pages = estimatePages(project.scenes)
   const mins = estimateMinutes(project.scenes)
-
   return (
     <div className="editor">
       <div className="editor-topbar">
@@ -103,6 +92,10 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
           {editingTitle
             ? <input className="title-input" value={titleVal} autoFocus onChange={e => setTitleVal(e.target.value)} onBlur={saveTitle} onKeyDown={e => { if (e.key==='Enter') saveTitle(); if (e.key==='Escape') setEditingTitle(false) }} />
             : <h1 className="editor-title" onClick={() => setEditingTitle(true)}>{project.title}</h1>
+          }
+          {editingAuthor
+            ? <input className="author-input" value={authorVal} autoFocus placeholder="Auteur·rice(s)" onChange={e => setAuthorVal(e.target.value)} onBlur={saveAuthor} onKeyDown={e => { if (e.key==='Enter') saveAuthor(); if (e.key==='Escape') setEditingAuthor(false) }} />
+            : <span className="author-badge" onClick={() => setEditingAuthor(true)}>{project.author ? '✍ '+project.author : '+ auteur·rice'}</span>
           }
           <span className="format-badge">{project.format==='us'?'US':'FR'}</span>
         </div>
@@ -119,7 +112,7 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
           <div className="sidebar-header">Scènes</div>
           <div className="scene-list">
             {project.scenes.map((s, i) => (
-              <div key={s.id} className={"scene-item" + (s.id===activeSceneId?" active":"")} onClick={() => setActiveSceneId(s.id)}>
+              <div key={s.id} className={"scene-item"+(s.id===activeSceneId?" active":"")} onClick={() => setActiveSceneId(s.id)}>
                 <div className="scene-item-top">
                   <span className="scene-num">{i+1}</span>
                   <div className="scene-item-actions">

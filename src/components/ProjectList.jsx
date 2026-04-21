@@ -4,10 +4,11 @@ import './ProjectList.css'
 export default function ProjectList({ projects, onNew, onOpen, onDelete, onExportAll, onExportProject, onImport, importError }) {
   const [showNew, setShowNew] = useState(false)
   const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
   const [newFormat, setNewFormat] = useState('fr')
   const [confirmDelete, setConfirmDelete] = useState(null)
   const fileRef = useRef()
-  const handleCreate = () => { if (!newTitle.trim()) return; onNew(newTitle.trim(), newFormat); setShowNew(false); setNewTitle('') }
+  const handleCreate = () => { if (!newTitle.trim()) return; onNew(newTitle.trim(), newFormat, newAuthor.trim()); setShowNew(false); setNewTitle(''); setNewAuthor('') }
   const handleFileChange = (e) => { const file = e.target.files[0]; if (file) onImport(file); e.target.value = '' }
   const formatDate = (iso) => { if (!iso) return ''; return new Date(iso).toLocaleDateString('fr-CA', { year:'numeric', month:'long', day:'numeric' }) }
   return (
@@ -27,10 +28,11 @@ export default function ProjectList({ projects, onNew, onOpen, onDelete, onExpor
           <div className="new-project-card">
             <h3>Nouveau scénario</h3>
             <input autoFocus className="input-field" placeholder="Titre du scénario" value={newTitle} onChange={e => setNewTitle(e.target.value)} onKeyDown={e => { if (e.key==='Enter') handleCreate(); if (e.key==='Escape') setShowNew(false) }} />
+            <input className="input-field" placeholder="Auteur·rice(s) — apparaîtra sur la couverture PDF" value={newAuthor} onChange={e => setNewAuthor(e.target.value)} onKeyDown={e => { if (e.key==='Enter') handleCreate(); if (e.key==='Escape') setShowNew(false) }} />
             <div className="format-pick">
               <span>Format :</span>
-              <button className={"format-chip" + (newFormat==='fr'?' active':'')} onClick={() => setNewFormat('fr')}>Français (A4)</button>
-              <button className={"format-chip" + (newFormat==='us'?' active':'')} onClick={() => setNewFormat('us')}>Américain (Letter)</button>
+              <button className={"format-chip"+(newFormat==='fr'?' active':'')} onClick={() => setNewFormat('fr')}>Français (A4)</button>
+              <button className={"format-chip"+(newFormat==='us'?' active':'')} onClick={() => setNewFormat('us')}>Américain (Letter)</button>
             </div>
             <div className="new-project-btns">
               <button className="btn-ghost" onClick={() => setShowNew(false)}>Annuler</button>
@@ -60,6 +62,7 @@ export default function ProjectList({ projects, onNew, onOpen, onDelete, onExpor
                     </div>
                   </div>
                   <h3 className="project-title">{p.title}</h3>
+                  {p.author && <div className="project-author">✍ {p.author}</div>}
                   <div className="project-meta"><span>{p.scenes?.length||0} scène{(p.scenes?.length||0)!==1?'s':''}</span><span>·</span><span>~{pages} p.</span><span>·</span><span>~{mins} min</span></div>
                   <div className="project-date">{formatDate(p.updatedAt)}</div>
                 </div>
