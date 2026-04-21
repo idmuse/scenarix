@@ -38,11 +38,11 @@
 .fmt-btn:hover { background: var(--bg4); color: var(--text); border-color: var(--border2); }
 .fmt-btn.active { background: var(--accent); color: #1a1410; border-color: var(--accent); font-weight: 600; }
 .page-scroll { flex: 1; overflow-y: auto; padding: 24px 24px 80px; background: var(--bg); display: flex; flex-direction: column; align-items: center; gap: 0; }
-.page { width: 100%; max-width: 600px; background: var(--page-bg); border-radius: var(--border-radius, 10px); padding: 48px 64px 56px; min-height: 640px; box-shadow: var(--shadow); overflow: visible; }
+.page { width: 100%; max-width: 600px; background: var(--page-bg); border-radius: 10px; padding: 64px 64px 64px; min-height: 640px; box-shadow: var(--shadow); overflow: visible; }
 .page[data-format="us"] { max-width: 580px; padding: 56px 72px; }
-.script-el { display: block; margin-bottom: 2px; position: relative; }
+.script-el { display: block; margin-bottom: 6px; position: relative; overflow: visible; }
 .el-type-label { display: block; width: fit-content; font-size: 9px; font-weight: 600; color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(200,169,110,0.25); border-radius: 3px; text-transform: uppercase; letter-spacing: 0.6px; padding: 1px 6px; margin-bottom: 2px; margin-left: 0; white-space: nowrap; font-family: var(--font-ui); }
-.el-textarea { width: 100%; background: transparent; border: none; color: var(--page-text); font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.7; resize: none; padding: 2px 4px; border-radius: 3px; transition: background .1s; overflow: hidden; }
+.el-textarea { width: 100%; background: transparent; border: none; color: var(--page-text); font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.7; resize: none; padding: 4px 4px; border-radius: 3px; transition: background .1s; overflow: visible; min-height: 28px; display: block; }
 .el-textarea:focus { outline: none; background: rgba(200,169,110,0.06); }
 .el-textarea::placeholder { color: #b0a898; }
 .el-scene_heading .el-textarea { text-transform: uppercase; font-weight: 500; margin-top: 20px; margin-bottom: 4px; border-bottom: 1px solid #ddd8ce; border-radius: 0; padding-bottom: 6px; }
