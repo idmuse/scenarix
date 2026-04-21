@@ -9,10 +9,18 @@ export function exportToPDF(project) {
   const fmt = FMT[project.format] || FMT.fr
   const doc = new jsPDF({ unit:'mm', format: project.format==='us'?'letter':'a4' })
   doc.setFont('Courier','bold'); doc.setFontSize(16)
-  doc.text(project.title.toUpperCase(), fmt.pageWidth/2, fmt.pageHeight/2-20, {align:'center'})
+  const titleY = fmt.pageHeight/2 - 20
+  doc.text(project.title.toUpperCase(), fmt.pageWidth/2, titleY, {align:'center'})
   doc.setFont('Courier','normal'); doc.setFontSize(12)
-  doc.text('Écrit avec ScriptFlow', fmt.pageWidth/2, fmt.pageHeight/2-6, {align:'center'})
-  doc.text(new Date().toLocaleDateString('fr-CA'), fmt.pageWidth/2, fmt.pageHeight/2+1, {align:'center'})
+  const dateStr = new Date().toLocaleDateString('fr-CA')
+  if (project.author && project.author.trim()) {
+    doc.text('par ' + project.author.trim(), fmt.pageWidth/2, titleY+12, {align:'center'})
+    doc.text('Écrit avec ScriptFlow', fmt.pageWidth/2, titleY+22, {align:'center'})
+    doc.text(dateStr, fmt.pageWidth/2, titleY+29, {align:'center'})
+  } else {
+    doc.text('Écrit avec ScriptFlow', fmt.pageWidth/2, titleY+14, {align:'center'})
+    doc.text(dateStr, fmt.pageWidth/2, titleY+21, {align:'center'})
+  }
   doc.addPage(); let y = fmt.marginTop; let pg = 2
   function addPage() { doc.addPage(); pg++; y = fmt.marginTop; doc.setFont('Courier','normal'); doc.setFontSize(10); doc.text(pg+'.', fmt.pageWidth-fmt.marginRight, 18, {align:'right'}) }
   project.scenes.forEach(scene => {
@@ -21,10 +29,11 @@ export function exportToPDF(project) {
       const st = getStyle(el.type, fmt); if (st.skip) return
       y += st.sb; if (y > fmt.pageHeight - fmt.marginBottom) addPage()
       doc.setFont('Courier', st.bold?'bold':st.italic?'italic':'normal'); doc.setFontSize(fmt.fontSize)
-      const txt = st.upper ? el.text.toUpperCase() : el.text
-      const lines = doc.splitTextToSize(txt, st.w)
+      const lines = doc.splitTextToSize(st.upper ? el.text.toUpperCase() : el.text, st.w)
       lines.forEach(line => { if (y + fmt.lineHeight > fmt.pageHeight - fmt.marginBottom) addPage(); doc.text(line, fmt.marginLeft + st.indent, y); y += fmt.lineHeight })
     })
   })
+  const total = doc.getNumberOfPages()
+  for (let i = 2; i <= total; i++) { doc.setPage(i); doc.setFont('Courier','normal'); doc.setFontSize(9); doc.setTextColor(150); doc.text('ScriptFlow', fmt.marginLeft, fmt.pageHeight-10); doc.setTextColor(0) }
   doc.save(project.title.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.pdf')
 }
