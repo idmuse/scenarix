@@ -6,8 +6,8 @@ function getStyle(type, fmt) {
   return s[type] || {indent:0,w,bold:false,upper:false,sb:5}
 }
 export function exportToPDF(project) {
-  const fmt = FMT[project.format] || FMT.fr
-  const doc = new jsPDF({ unit:'mm', format: project.format==='us'?'letter':'a4' })
+  const fmt = FMT.us
+  const doc = new jsPDF({ unit:'mm', format: 'letter' })
   doc.setFont('Courier','bold'); doc.setFontSize(16)
   const titleY = fmt.pageHeight/2 - 20
   doc.text(project.title.toUpperCase(), fmt.pageWidth/2, titleY, {align:'center'})

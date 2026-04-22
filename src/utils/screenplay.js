@@ -3,7 +3,7 @@ export const ELEMENT_LABELS = { scene_heading: 'En-tête de scène', action: 'Ac
 export const ELEMENT_SHORTCUTS = { scene_heading: '⌘1', action: '⌘2', character: '⌘3', parenthetical: '⌘4', dialogue: '⌘5', transition: '⌘6', note: '⌘7' }
 export const TAB_CYCLE = { scene_heading: 'action', action: 'character', character: 'dialogue', parenthetical: 'dialogue', dialogue: 'character', transition: 'action', note: 'action' }
 export const ENTER_CREATES = { scene_heading: 'action', action: 'action', character: 'dialogue', parenthetical: 'dialogue', dialogue: 'character', transition: 'scene_heading', note: 'action' }
-export function createProject(title = 'Nouveau projet', author = '') { return { id: crypto.randomUUID(), title, author, format: 'fr', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), scenes: [createScene()] } }
+export function createProject(title = 'Nouveau projet', author = '') { return { id: crypto.randomUUID(), title, author, format: 'us', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), scenes: [createScene()] } }
 export function createScene(title = 'INT. LIEU — JOUR') { return { id: crypto.randomUUID(), title, note: '', elements: [createElement('scene_heading', title)] } }
 export function createElement(type = 'action', text = '') { return { id: crypto.randomUUID(), type, text } }
 export function estimatePages(scenes) { let lines = 0; scenes.forEach(s => { s.elements.forEach(el => { lines += Math.max(1, Math.ceil((el.text.length || 1) / 60)) + 1 }) }); return Math.max(1, Math.round(lines / 55)) }

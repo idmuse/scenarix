@@ -169,7 +169,7 @@ export default function Editor({ project, onUpdate, onBack, onExportProject }) {
             ? <input className="author-input" value={authorVal} autoFocus placeholder="Auteur·rice(s)" onChange={e => setAuthorVal(e.target.value)} onBlur={saveAuthor} onKeyDown={e => { if (e.key==='Enter') saveAuthor(); if (e.key==='Escape') setEditingAuthor(false) }} />
             : <span className="author-badge" onClick={() => setEditingAuthor(true)}>{project.author ? '✍ '+project.author : '+ auteur·rice'}</span>
           }
-          <span className="format-badge">{project.format==='us'?'US':'FR'}</span>
+          
         </div>
         <div className="topbar-right">
           <span className="stat">p. {totalPages}</span>
