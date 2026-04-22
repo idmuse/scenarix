@@ -15,10 +15,10 @@ export function exportToPDF(project) {
   const dateStr = new Date().toLocaleDateString('fr-CA')
   if (project.author && project.author.trim()) {
     doc.text('par ' + project.author.trim(), fmt.pageWidth/2, titleY+12, {align:'center'})
-    doc.text('Écrit avec ScriptFlow', fmt.pageWidth/2, titleY+22, {align:'center'})
+    doc.text('Écrit avec Scripta', fmt.pageWidth/2, titleY+22, {align:'center'})
     doc.text(dateStr, fmt.pageWidth/2, titleY+29, {align:'center'})
   } else {
-    doc.text('Écrit avec ScriptFlow', fmt.pageWidth/2, titleY+14, {align:'center'})
+    doc.text('Écrit avec Scripta', fmt.pageWidth/2, titleY+14, {align:'center'})
     doc.text(dateStr, fmt.pageWidth/2, titleY+21, {align:'center'})
   }
   doc.addPage(); let y = fmt.marginTop; let pg = 2
@@ -34,6 +34,6 @@ export function exportToPDF(project) {
     })
   })
   const total = doc.getNumberOfPages()
-  for (let i = 2; i <= total; i++) { doc.setPage(i); doc.setFont('Courier','normal'); doc.setFontSize(9); doc.setTextColor(150); doc.text('ScriptFlow', fmt.marginLeft, fmt.pageHeight-10); doc.setTextColor(0) }
+  for (let i = 2; i <= total; i++) { doc.setPage(i); doc.setFont('Courier','normal'); doc.setFontSize(9); doc.setTextColor(150); doc.text('Scripta', fmt.marginLeft, fmt.pageHeight-10); doc.setTextColor(0) }
   doc.save(project.title.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.pdf')
 }

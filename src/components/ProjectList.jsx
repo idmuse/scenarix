@@ -14,7 +14,7 @@ export default function ProjectList({ projects, onNew, onOpen, onDelete, onExpor
   return (
     <div className="home">
       <div className="home-header">
-        <div className="home-logo"><span className="logo-text">ScriptFlow</span><span className="logo-badge">Beta</span></div>
+        <div className="home-logo"><span className="logo-text">Scripta</span><span className="logo-badge">Beta</span></div>
         <div className="home-actions">
           <button className="btn-ghost" onClick={() => fileRef.current.click()}>Importer</button>
           {projects.length > 0 && <button className="btn-ghost" onClick={onExportAll}>Tout exporter</button>}
